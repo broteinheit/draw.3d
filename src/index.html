@@ -21,9 +21,17 @@
                 border-radius: 100%;
             }
         </style>
+    </head>
 
-        <script>
-            document.onload(function() {
+    <body>
+        <div class="garden">
+            <div class="ball"></div>
+          </div>
+          
+          <pre class="output"></pre>
+
+          <script>
+            
                 var ball   = document.querySelector('.ball');
                 var garden = document.querySelector('.garden');
                 var output = document.querySelector('.output');
@@ -55,15 +63,6 @@
                 }
 
                 window.addEventListener('deviceorientation', handleOrientation);
-            })
         </script>
-    </head>
-
-    <body>
-        <div class="garden">
-            <div class="ball"></div>
-          </div>
-          
-          <pre class="output"></pre>
     </body>
 </html>
