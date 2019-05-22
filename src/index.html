@@ -3,58 +3,58 @@
     <head>
         <title>draw.3d</title>
         <style>
-            .garden {
-                position: absolute;
-                top: 0px;
-                bottom: 0px;
-                right: 0px;
-                left: 0px;
-                border: black solid 1px;
+            html, body {
+                margin: 0px;
+                background-color: lightblue;
             }
 
             .ball {
                 position: absolute;
                 top   : 90px;
                 left  : 90px;
-                width : 20px;
-                height: 20px;
-                background: green;
+                width : 40px;
+                height: 40px;
+                background: blue;
                 border-radius: 100%;
             }
         </style>
     </head>
 
     <body>
-        <div class="garden">
-            <div class="ball"></div>
-          </div>
-          
+        <div class="ball"></div>
           <pre class="output"></pre>
 
           <script>
             
                 var ball   = document.querySelector('.ball');
-                var garden = document.querySelector('.garden');
                 var output = document.querySelector('.output');
 
-                var maxX = garden.clientWidth  - ball.clientWidth;
-                var maxY = garden.clientHeight - ball.clientHeight;
+
 
                 function handleOrientation(event) {
+                    var minX = 0;
+                    var minY = innerHeight/2-innerWidth/2;
+                    var maxY = innerWidth - ball.clientWidth;
+                    var maxX = innerWidth - ball.clientWidth;
+
                     var absolute = event.absolute;
                     var alpha = event.alpha;
                     var beta = event.beta;  // In degree in the range [-180,180]
                     var gamma = event.gamma; // In degree in the range [-90,90]
 
+                    // Because we don't want to have the device upside down
+                    // We constrain the x value to the range [-90,90]
+                    if (beta >  90) { beta =  90};
+                    if (beta <  -90) { beta =  -90};
+                    if (gamma > 90) { gamma = 90};
+                    if (gamma < -90) { gamma = -90};
+
                     output.innerHTML  = "absolute: " + absolute + "\n";
                     output.innerHTML += "alpha: " + alpha + "\n";
                     output.innerHTML += "beta: " + beta + "\n";
                     output.innerHTML += "gamma: " + gamma + "\n";
-
-                    // Because we don't want to have the device upside down
-                    // We constrain the x value to the range [-90,90]
-                    if (beta >  90) { beta =  90};
-                    if (gamma < -90) { gamma = -90};
+                    output.innerHTML += "maxX: " + maxX + "\n";
+                    output.innerHTML += "maxY: " + maxY + "\n";
 
                     // To make computation easier we shift the range of
                     // x and y to [0,180]
@@ -63,8 +63,8 @@
 
                     // 10 is half the size of the ball
                     // It center the positioning point to the center of the ball
-                    ball.style.top  = (maxX*beta/180) + "px";
-                    ball.style.left = (maxY*gamma/180) + "px";
+                    ball.style.top  = (minY + (maxY*beta/180)) + "px";
+                    ball.style.left = (minX + (maxX*gamma/180)) + "px";
                 }
 
                 window.addEventListener('deviceorientation', handleOrientation);
