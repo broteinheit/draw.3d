@@ -36,10 +36,23 @@
                 height: 23vw;
                 margin: 0.5vw;
             }
+
+            #pickerBtn {
+                position: absolute;
+                font-size: 4vw;
+                right: 3vw;
+                bottom: 3vw;
+                border-radius: 10px;
+                border: none;
+                background: white;
+                padding: 2vw;
+            }
         </style>
     </head>
 
     <body>
+        <button id="pickerBtn">Choose Color</button>
+
         <div class="colorPicker">
             <div class="color" style="background: #f44336"></div>
             <div class="color" style="background: #E91E63"></div>
@@ -113,6 +126,8 @@
         <script>
             var socket = io('/client');
 
+            $('#pickerBtn').hide();
+
             socket.on('id', function(msg) {
                 console.log(msg);
                 id = msg;
@@ -160,11 +175,18 @@
             $(".color").on('click', function() {
                 $(".colorPicker").hide();
                 $("html, body").css('background-color', $(this).css('background-color'));
-                $('.ball').show();
+                $('.ball, #pickerBtn').show();
                 colorPicker = false;
 
                 setInterval(sendOrientation, 10);
             });
+
+            $("#pickerBtn").on('click', function() {
+                colorPicker = true;
+                $(this).hide();
+                $(".colorPicker").show();
+                $('.ball').hide();
+            })
         </script>
     </body>
 </html>
