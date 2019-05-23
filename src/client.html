@@ -7,6 +7,8 @@
             html, body {
                 margin: 0px;
                 background-color: lightblue;
+                width: 100%;
+                height: 100%;
             }
 
             .ball {
@@ -15,22 +17,38 @@
                 left  : 90px;
                 width : 40px;
                 height: 40px;
-                background: blue;
+                background: white;
                 border-radius: 100%;
+            }
+
+            .colorPicker {
+                background: white;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+            }
+
+            .color {
+                width: 49%;
+                height: 49%;
+                margin: 1% 0 0 1%;
+                background: orange;
             }
         </style>
     </head>
 
     <body>
+        <div class="colorPicker">
+            <div class="color"></div>
+        </div>
+
         <div class="ball" id="own"></div>
         <div id="otherBalls">
-
         </div>
-        
+
         <script>
             var users = [];
             var ball   = document.querySelector('#own');
-            var output = document.querySelector('.output');
             var beta;
             var gamma;
             var id;
@@ -71,19 +89,19 @@
 
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            var socket = io();
+            var socket = io('/client');
 
             socket.on('id', function(msg) {
+                console.log(msg);
                 id = msg;
             });
 
             socket.on('users changed', function(msg) {
-                console.log(msg);
                 users = msg;
                 var html="";
 
                 users.forEach(elem => {
-                    if (id != elem) {
+                if (id != elem) {
                         html += "<div id=\"" + elem + "\" class=\"ball\"></div>";
                     }
                 });
@@ -92,9 +110,12 @@
             });
 
             socket.on('others', function(msg) {
+                //console.log(msg);
                 var obj = msg;
                 $('#' + obj.id).css("top", (minY + (maxY*(obj.beta+90)/180)) + "px");
                 $('#' + obj.id).css("left", (minX + (maxX*(obj.gamma+90)/180)) + "px");
+                $('#' + obj.id).css('background', "blue");
+                $('#' + obj.id).css('z-index', "12");
             });
 
             function sendOrientation() {
@@ -105,7 +126,14 @@
                 }
                 socket.emit('orientation', obj);
             };
+            
 
+            $(".color").on('click', function() {
+                $(".colorPicker").hide();
+                $("html, body").css('background-color', $(this).css('background-color'));
+            });
+
+            
             setInterval(sendOrientation, 10);
         </script>
     </body>
