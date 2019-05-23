@@ -17,15 +17,15 @@
                 left  : 90px;
                 width : 40px;
                 height: 40px;
-                background: white;
+                background: black;
                 border-radius: 100%;
+                border: solid black 1px;
             }
 
             .colorPicker {
                 background: white;
                 width: 100%;
                 height: 100%;
-                z-index: 1;
             }
 
             .color {
@@ -42,9 +42,9 @@
             <div class="color"></div>
         </div>
 
-        <div class="ball" id="own"></div>
         <div id="otherBalls">
         </div>
+        <div class="ball" id="own" style="background: white"></div>
 
         <script>
             var users = [];
@@ -56,6 +56,7 @@
             var minY;
             var maxY;
             var maxX;
+            var colorPicker=true;
 
             function handleOrientation(event) {
                 minX = 0;
@@ -101,12 +102,17 @@
                 var html="";
 
                 users.forEach(elem => {
-                if (id != elem) {
+                    if (id != elem) {
                         html += "<div id=\"" + elem + "\" class=\"ball\"></div>";
                     }
                 });
 
                 $("#otherBalls").html(html);
+                
+                $('.ball').hide();
+                if (!colorPicker) {
+                    $('#own').show();
+                }
             });
 
             socket.on('others', function(msg) {
@@ -114,15 +120,17 @@
                 var obj = msg;
                 $('#' + obj.id).css("top", (minY + (maxY*(obj.beta+90)/180)) + "px");
                 $('#' + obj.id).css("left", (minX + (maxX*(obj.gamma+90)/180)) + "px");
-                $('#' + obj.id).css('background', "blue");
-                $('#' + obj.id).css('z-index', "12");
+                $('#' + obj.id).css('background', obj.color);
+                if (!colorPicker)
+                    $('#'+ obj.id).show();
             });
 
             function sendOrientation() {
                 var obj = {
                     id: id,
                     beta: beta,
-                    gamma: gamma
+                    gamma: gamma,
+                    color: $('html').css('background-color')
                 }
                 socket.emit('orientation', obj);
             };
@@ -131,10 +139,11 @@
             $(".color").on('click', function() {
                 $(".colorPicker").hide();
                 $("html, body").css('background-color', $(this).css('background-color'));
-            });
+                $('.ball').show();
+                colorPicker = false;
 
-            
-            setInterval(sendOrientation, 10);
+                setInterval(sendOrientation, 10);
+            });
         </script>
     </body>
 </html>
