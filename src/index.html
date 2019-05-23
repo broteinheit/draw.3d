@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>draw.3d</title>
+        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
         <style>
             html, body {
                 margin: 0px;
@@ -28,7 +29,8 @@
             
                 var ball   = document.querySelector('.ball');
                 var output = document.querySelector('.output');
-
+                var beta;
+                var gamma;
 
 
                 function handleOrientation(event) {
@@ -39,8 +41,8 @@
 
                     var absolute = event.absolute;
                     var alpha = event.alpha;
-                    var beta = event.beta;  // In degree in the range [-180,180]
-                    var gamma = event.gamma; // In degree in the range [-90,90]
+                    beta = event.beta;  // In degree in the range [-180,180]
+                    gamma = event.gamma; // In degree in the range [-90,90]
 
                     // Because we don't want to have the device upside down
                     // We constrain the x value to the range [-90,90]
@@ -73,6 +75,17 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socket = io();
+
+            function sendOrientation() {
+                var obj = {
+                    id: 0,
+                    beta: beta,
+                    gamma: gamma
+                }
+                socket.emit('orientation', JSON.stringify(obj));
+            };
+
+            setInterval(sendOrientation, 10);
         </script>
     </body>
 </html>

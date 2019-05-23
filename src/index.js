@@ -11,6 +11,10 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(){
       console.log('user disconnected');
     });
+
+    socket.on('orientation', function(msg) {
+      console.log(msg);
+    });
 });
 
 http.listen(3000, function(){
