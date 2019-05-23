@@ -1,123 +1,15 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
-    <head>
-        <title>draw.3d</title>
-        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-        <style>
-            html, body {
-                margin: 0px;
-                background-color: lightblue;
-            }
+    <script>
+        var device = navigator.userAgent;
 
-            .ball {
-                position: absolute;
-                top   : 90px;
-                left  : 90px;
-                width : 40px;
-                height: 40px;
-                background: blue;
-                border-radius: 100%;
-            }
-        </style>
-    </head>
+        if (device.match(/Android/i)
+            || device.match(/iPhone|iPad|iPod/i)) {
 
-    <body>
-        <div class="ball" id="own"></div>
-        <div id="otherBalls">
 
-        </div>
-        <pre class="output"></pre>
-
-        beta_other: <span id="betaO"></span><br>
-        gamma_other: <span id="gammaO"></span>
-
-        <script>
-            var users = [];
-            var ball   = document.querySelector('#own');
-            var output = document.querySelector('.output');
-            var beta;
-            var gamma;
-            var id;
-            var minX;
-            var minY;
-            var maxY;
-            var maxX;
-
-            function handleOrientation(event) {
-                minX = 0;
-                minY = innerHeight/2-innerWidth/2;
-                maxY = innerWidth - ball.clientWidth;
-                maxX = innerWidth - ball.clientWidth;
-
-                var absolute = event.absolute;
-                var alpha = event.alpha;
-                beta = event.beta;  // In degree in the range [-180,180]
-                gamma = event.gamma; // In degree in the range [-90,90]
-
-                // Because we don't want to have the device upside down
-                // We constrain the x value to the range [-90,90]
-                if (beta >  90) { beta =  90};
-                if (beta <  -90) { beta =  -90};
-                if (gamma > 90) { gamma = 90};
-                if (gamma < -90) { gamma = -90};
-
-                output.innerHTML  = "absolute: " + absolute + "\n";
-                output.innerHTML += "alpha: " + alpha + "\n";
-                output.innerHTML += "beta: " + beta + "\n";
-                output.innerHTML += "gamma: " + gamma + "\n";
-                output.innerHTML += "maxX: " + maxX + "\n";
-                output.innerHTML += "maxY: " + maxY + "\n";
-
-                // To make computation easier we shift the range of
-                // x and y to [0,180]
-
-                // 10 is half the size of the ball
-                // It center the positioning point to the center of the ball
-                ball.style.top  = (minY + (maxY*(beta+90)/180)) + "px";
-                ball.style.left = (minX + (maxX*(gamma+90)/180)) + "px";
-            }
-
-            window.addEventListener('deviceorientation', handleOrientation);
-        </script>
-
-        <script src="/socket.io/socket.io.js"></script>
-        <script>
-            var socket = io();
-
-            socket.on('id', function(msg) {
-                id = msg;
-            });
-
-            socket.on('users changed', function(msg) {
-                console.log(msg);
-                users = msg;
-                var html="";
-
-                users.forEach(elem => {
-                    if (id != elem) {
-                        html += "<div id=\"" + elem + "\" class=\"ball\"></div>";
-                    }
-                });
-
-                $("#otherBalls").html(html);
-            });
-
-            socket.on('others', function(msg) {
-                var obj = msg;
-                $('#' + obj.id).css("top", (minY + (maxY*(obj.beta+90)/180)) + "px");
-                $('#' + obj.id).css("left", (minX + (maxX*(obj.gamma+90)/180)) + "px");
-            });
-
-            function sendOrientation() {
-                var obj = {
-                    id: id,
-                    beta: beta,
-                    gamma: gamma
-                }
-                socket.emit('orientation', obj);
-            };
-
-            setInterval(sendOrientation, 10);
-        </script>
-    </body>
+            location.pathname = "/client";
+        } else {
+            location.pathname = "/server";
+        }
+    </script>
 </html>

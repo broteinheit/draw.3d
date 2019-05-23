@@ -7,6 +7,14 @@ app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/client', function(req, res) {
+    res.sendFile(__dirname + "/client.html");
+});
+
+app.get('/server', function(req, res) {
+    res.sendFile(__dirname + "/server.html");
+});
+
 io.on('connection', function(socket){
     users.push(socket.id);
     console.log('a user connected');

@@ -1,0 +1,33 @@
+﻿<!doctype html>
+<html>
+    <head>
+        <title>draw.3d</title>
+        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <style>
+            html, body {
+                margin: 0px;
+                background-color: lightblue;
+            }
+        </style>
+    </head>
+
+    <body>
+        <script>
+            var users = [];
+            
+        </script>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io();
+
+            socket.on('users changed', function(msg) {
+                
+            });
+
+            socket.on('others', function(msg) {
+                console.log(msg);
+            });
+        </script>
+    </body>
+</html>
