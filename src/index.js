@@ -15,6 +15,10 @@ app.get('/server', function(req, res) {
     res.sendFile(__dirname + "/server.html");
 });
 
+app.get('/js/three.js', function(req, res) {
+    res.sendFile(__dirname + "/js/three.js");
+});
+
 io.of('/server').on('connection', function(socket) {
     console.log('a server connected');
 
