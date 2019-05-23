@@ -31,6 +31,7 @@
                 var output = document.querySelector('.output');
                 var beta;
                 var gamma;
+                var id;
 
 
                 function handleOrientation(event) {
@@ -76,9 +77,13 @@
         <script>
             var socket = io();
 
+            socket.on('id', function(msg) {
+                id = msg;
+            });
+
             function sendOrientation() {
                 var obj = {
-                    id: 0,
+                    id: id,
                     beta: beta,
                     gamma: gamma
                 }
