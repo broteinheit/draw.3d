@@ -22,26 +22,32 @@
     </head>
 
     <body>
-        <div class="ball"></div>
+        <div class="ball" id="own"></div>
+        <div id="otherBalls">
+
+        </div>
         <pre class="output"></pre>
 
         beta_other: <span id="betaO"></span><br>
         gamma_other: <span id="gammaO"></span>
 
         <script>
-        
-            var ball   = document.querySelector('.ball');
+            var users = [];
+            var ball   = document.querySelector('#own');
             var output = document.querySelector('.output');
             var beta;
             var gamma;
             var id;
-
+            var minX;
+            var minY;
+            var maxY;
+            var maxX;
 
             function handleOrientation(event) {
-                var minX = 0;
-                var minY = innerHeight/2-innerWidth/2;
-                var maxY = innerWidth - ball.clientWidth;
-                var maxX = innerWidth - ball.clientWidth;
+                minX = 0;
+                minY = innerHeight/2-innerWidth/2;
+                maxY = innerWidth - ball.clientWidth;
+                maxX = innerWidth - ball.clientWidth;
 
                 var absolute = event.absolute;
                 var alpha = event.alpha;
@@ -82,10 +88,24 @@
                 id = msg;
             });
 
-            socket.on('orientation', function(msg) {
-                var obj = JSON.parse(msg);
-                $('#betaO').html(obj.beta);
-                $('#gammaO').html(obj.gamma);
+            socket.on('users changed', function(msg) {
+                console.log(msg);
+                users = msg;
+                var html="";
+
+                users.forEach(elem => {
+                    if (id != elem) {
+                        html += "<div id=\"" + elem + "\" class=\"ball\"></div>";
+                    }
+                });
+
+                $("#otherBalls").html(html);
+            });
+
+            socket.on('others', function(msg) {
+                var obj = msg;
+                $('#' + obj.id).css("top", (minY + (maxY*(obj.beta+90)/180)) + "px");
+                $('#' + obj.id).css("left", (minX + (maxX*(obj.gamma+90)/180)) + "px");
             });
 
             function sendOrientation() {
@@ -94,7 +114,7 @@
                     beta: beta,
                     gamma: gamma
                 }
-                socket.emit('orientation', JSON.stringify(obj));
+                socket.emit('orientation', obj);
             };
 
             setInterval(sendOrientation, 10);
