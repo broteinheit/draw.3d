@@ -16,6 +16,7 @@ io.on('connection', function(socket){
 
     socket.on('orientation', function(msg) {
       console.log(msg);
+      socket.broadcast.emit('orientation', msg);
     });
 });
 
