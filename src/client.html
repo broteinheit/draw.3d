@@ -6,7 +6,6 @@
         <style>
             html, body {
                 margin: 0px;
-                background-color: lightblue;
                 width: 100%;
                 height: 100%;
             }
@@ -19,27 +18,49 @@
                 height: 40px;
                 background: black;
                 border-radius: 100%;
-                border: solid black 1px;
+                /*border: solid black 1px;*/
             }
 
             .colorPicker {
+                text-align: center;
                 background: white;
                 width: 100%;
                 height: 100%;
+                overflow-y: scroll;
+                overflow-wrap: break-word;
             }
 
             .color {
-                width: 49%;
-                height: 49%;
-                margin: 1% 0 0 1%;
-                background: orange;
+                display: inline-block;
+                width: 23vw;
+                height: 23vw;
+                margin: 0.5vw;
             }
         </style>
     </head>
 
     <body>
         <div class="colorPicker">
-            <div class="color"></div>
+            <div class="color" style="background: #f44336"></div>
+            <div class="color" style="background: #E91E63"></div>
+            <div class="color" style="background: #9C27B0"></div>
+            <div class="color" style="background: #673AB7"></div>
+            <div class="color" style="background: #3F51B5"></div>
+            <div class="color" style="background: #2196F3"></div>
+            <div class="color" style="background: #03A9F4"></div>
+            <div class="color" style="background: #00BCD4"></div>
+            <div class="color" style="background: #009688"></div>
+            <div class="color" style="background: #4CAF50"></div>
+            <div class="color" style="background: #8BC34A"></div>
+            <div class="color" style="background: #CDDC39"></div>
+            <div class="color" style="background: #FFEB3B"></div>
+            <div class="color" style="background: #FFC107"></div>
+            <div class="color" style="background: #ffa500"></div>
+            <div class="color" style="background: #FF9800"></div>
+            <div class="color" style="background: #FF5722"></div>
+            <div class="color" style="background: #795548"></div>
+            <div class="color" style="background: #9E9E9E"></div>
+            <div class="color" style="background: #607D8B"></div>
         </div>
 
         <div id="otherBalls">
