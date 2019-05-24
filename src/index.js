@@ -19,9 +19,15 @@ app.get('/js/three.js', function(req, res) {
     res.sendFile(__dirname + "/js/three.js");
 });
 
-io.of('/server').on('connection', function(socket) {
-    console.log('a server connected');
+app.get('/js/OrbitControls.js', function(req, res) {
+    res.sendFile(__dirname + "/js/OrbitControls.js");
+});
 
+
+var serverSockets = io.of('/server')
+serverSockets.on('connection', function(socket) {
+    console.log('a server connected');
+    socket.emit('users changed', users);
 
     socket.on('disconnect', function(){
       console.log('server disconnected');
@@ -42,6 +48,8 @@ clients.on("connection", function(socket) {
 
     socket.broadcast.emit('users changed', users);
     socket.emit('users changed', users);
+
+    serverSockets.emit('users changed', users);    
 
     socket.on('disconnect', function(){
       console.log('client disconnected');

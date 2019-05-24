@@ -19,6 +19,7 @@
 
     <body>
         <script src="js/three.js"></script>
+        <script src="js/OrbitControls.js"></script>
         <script>
             var users = [];
             
@@ -29,11 +30,7 @@
             renderer.setSize( window.innerWidth, window.innerHeight);
             document.body.appendChild( renderer.domElement );
 
-            var geometry = new THREE.SphereGeometry( 0.25, 32, 32 );
-            var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-            var cube = new THREE.Mesh( geometry, material );
-            scene.add( cube );
-
+            scene.add( new THREE.AmbientLight( 0x666666 ) );
             var light = new THREE.DirectionalLight( 0xdfebff, 1 );
 
             light.position.set( 50, 200, 100 );
@@ -49,35 +46,49 @@
             light.shadow.camera.far = 1000;
 
             scene.add( light );
-
+            
             var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), 
-                new THREE.MeshNormalMaterial( ) );
+                new THREE.MeshStandardMaterial( {color: 0xff0000} ) );
             mesh.position.y = - 250;
             mesh.rotation.x = - Math.PI / 2;
             mesh.receiveShadow = true;
             scene.add( mesh );
-
+            
             camera.position.z = 5;
-            camera.position.y = 0;
+            camera.position.y = 10;
+
+            
+            var controls = new THREE.OrbitControls( camera, renderer.domElement );
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.25;
+            controls.enableZoom = true;
+            //controls.autoRotate = true;
 
             function animate() {
                 requestAnimationFrame( animate );
                 
-                cube.rotation.x += 0.01;
-                cube.rotation.y += 0.01;
-                cube.position.x += 0.01;
-
+                controls.update();
                 renderer.render( scene, camera );
             }
             animate();
+            
         </script>
 
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socket = io('/server');
 
+            var spheres = [];
+
+            
+
             socket.on('users changed', function(msg) {
-                
+                msg.forEach(element => {
+                    var geometry = new THREE.SphereGeometry( 0.25, 32, 32 );
+                    var material = new THREE.MeshStandardMaterial( { color: 'white' } );
+                    var sphere = new THREE.Mesh( geometry, material );
+                    scene.add( sphere );
+                });
             });
 
             socket.on('others', function(msg) {
