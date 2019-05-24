@@ -23,6 +23,33 @@
         <script>
             var users = [];
             
+            var spheres = [];
+
+            function addSphere(color) {
+                var geometry = new THREE.SphereGeometry( 0.25, 32, 32 );
+                var material = new THREE.MeshStandardMaterial( { color: color } );
+                var sphere = new THREE.Mesh( geometry, material );
+                scene.add( sphere );
+                spheres.push({
+                    renderElem: sphere, 
+                    direction: {x: 0, y: 0, z: 0}
+                });
+            }
+
+            function move() {
+                spheres.forEach(elem => {
+                    elem.renderElem.position.x += elem.direction.x;
+                    elem.renderElem.position.y += elem.direction.y;
+                    elem.renderElem.position.z += elem.direction.z;
+                });
+            }
+
+
+
+
+
+
+
             var scene = new THREE.Scene();
             var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
@@ -65,6 +92,7 @@
             //controls.autoRotate = true;
 
             function animate() {
+                move();
                 requestAnimationFrame( animate );
                 
                 controls.update();
@@ -78,16 +106,9 @@
         <script>
             var socket = io('/server');
 
-            var spheres = [];
-
-            
-
             socket.on('users changed', function(msg) {
                 msg.forEach(element => {
-                    var geometry = new THREE.SphereGeometry( 0.25, 32, 32 );
-                    var material = new THREE.MeshStandardMaterial( { color: 'white' } );
-                    var sphere = new THREE.Mesh( geometry, material );
-                    scene.add( sphere );
+                    addSphere('white');
                 });
             });
 
