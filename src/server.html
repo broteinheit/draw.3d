@@ -33,7 +33,7 @@
 
                 spheres[id] = {
                     renderElem: sphere, 
-                    direction: {x: 0, y: 0, z: 0.05}
+                    direction: {x: 0, y: 0, z: 0}
                 };
             }
 
@@ -111,6 +111,10 @@
             var zMul = 1;
             var xMul = 1;
 
+            var roll = 0;
+            var pitch = 0;
+            var yaw = 0;
+
             socket.on('users changed', function(msg) {
                 msg.forEach(elem => {
                     addSphere('white', elem);
@@ -118,27 +122,30 @@
             });
 
             socket.on('orientation', function(msg) {
-                console.log(msg);
-                console.log(spheres);
 
-                if (msg.gamma >= 0) {
-                    if( spheres[msg.id].direction.z >= 0.05 ) zMul = -1;
-                    if( spheres[msg.id].direction.z <= -0.05 ) zMul = 1;
+                roll += 0 * Math.PI / 180;
+                pitch += msg.beta * Math.PI / 180;
+                yaw += msg.gamma * Math.PI / 180;
 
-                    if( spheres[msg.id].direction.x >= 0.05 ) xMul = -1;
-                    if( spheres[msg.id].direction.x <= -0.05 ) xMul = 1;
-                } else if (msg.gamma < 0) {
-                    if( spheres[msg.id].direction.z >= 0.05 ) zMul = 1;
-                    if( spheres[msg.id].direction.z <= -0.05 ) zMul = -1;
-                    
-                    if( spheres[msg.id].direction.x >= 0.05 ) xMul = 1;
-                    if( spheres[msg.id].direction.x <= -0.05 ) xMul = -1;
-                }
+                /*please fix!*/
 
-                spheres[msg.id].direction.z += (msg.gamma / 90) * -0.001 * zMul;
-                spheres[msg.id].direction.x += (msg.gamma / 90) * -0.001 * xMul;
+                var dX = Math.sin(yaw);
+                var dY = -(Math.sin(roll) * Math.cos(yaw));
+                var dZ = Math.cos(roll) * Math.cos(pitch);
 
-                console.log(spheres[msg.id]);
+                /*var dX = Math.cos(yaw)*Math.cos(pitch);
+                var dY = Math.sin(yaw)*Math.cos(pitch);
+                var dZ = Math.sin(pitch);*/
+
+                /*var dX = -Math.cos(yaw)*Math.sin(pitch)*Math.sin(roll)-Math.sin(yaw)*Math.cos(roll);
+                var dY = -Math.sin(yaw)*Math.sin(pitch)*Math.sin(roll)+Math.cos(yaw)*Math.cos(roll);
+                var dZ = Math.cos(pitch)*Math.sin(roll);*/
+
+                spheres[msg.id].direction.x = dX / 10;
+                spheres[msg.id].direction.y = dY / 10;
+                spheres[msg.id].direction.z = dZ / 10;
+
+                console.log("dX: " + dX + " dY: " + dY + " dZ: " + dZ);
             });
         </script>
     </body>
