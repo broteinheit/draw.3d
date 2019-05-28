@@ -60,6 +60,7 @@ clients.on("connection", function(socket) {
     socket.on('orientation', function(msg) {
       //console.log(users);
       socket.broadcast.emit('others', msg);
+      serverSockets.emit('orientation', msg);
     });
 });
 

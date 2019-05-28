@@ -23,25 +23,28 @@
         <script>
             var users = [];
             
-            var spheres = [];
+            var spheres = {};
 
-            function addSphere(color) {
+            function addSphere(color, id) {
                 var geometry = new THREE.SphereGeometry( 0.25, 32, 32 );
                 var material = new THREE.MeshStandardMaterial( { color: color } );
                 var sphere = new THREE.Mesh( geometry, material );
                 scene.add( sphere );
-                spheres.push({
+
+                spheres[id] = {
                     renderElem: sphere, 
-                    direction: {x: 0, y: 0, z: 0}
-                });
+                    direction: {x: 0, y: 0, z: 0.05}
+                };
             }
 
             function move() {
-                spheres.forEach(elem => {
+                for(x in spheres) {
+                    var elem = spheres[x];
+
                     elem.renderElem.position.x += elem.direction.x;
                     elem.renderElem.position.y += elem.direction.y;
                     elem.renderElem.position.z += elem.direction.z;
-                });
+                };
             }
 
 
@@ -81,8 +84,8 @@
             mesh.receiveShadow = true;
             scene.add( mesh );
             
-            camera.position.z = 5;
-            camera.position.y = 10;
+            camera.position.z = -5;
+            camera.position.y = 5;
 
             
             var controls = new THREE.OrbitControls( camera, renderer.domElement );
@@ -105,15 +108,37 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socket = io('/server');
+            var zMul = 1;
+            var xMul = 1;
 
             socket.on('users changed', function(msg) {
-                msg.forEach(element => {
-                    addSphere('white');
+                msg.forEach(elem => {
+                    addSphere('white', elem);
                 });
             });
 
-            socket.on('others', function(msg) {
+            socket.on('orientation', function(msg) {
                 console.log(msg);
+                console.log(spheres);
+
+                if (msg.gamma >= 0) {
+                    if( spheres[msg.id].direction.z >= 0.05 ) zMul = -1;
+                    if( spheres[msg.id].direction.z <= -0.05 ) zMul = 1;
+
+                    if( spheres[msg.id].direction.x >= 0.05 ) xMul = -1;
+                    if( spheres[msg.id].direction.x <= -0.05 ) xMul = 1;
+                } else if (msg.gamma < 0) {
+                    if( spheres[msg.id].direction.z >= 0.05 ) zMul = 1;
+                    if( spheres[msg.id].direction.z <= -0.05 ) zMul = -1;
+                    
+                    if( spheres[msg.id].direction.x >= 0.05 ) xMul = 1;
+                    if( spheres[msg.id].direction.x <= -0.05 ) xMul = -1;
+                }
+
+                spheres[msg.id].direction.z += (msg.gamma / 90) * -0.001 * zMul;
+                spheres[msg.id].direction.x += (msg.gamma / 90) * -0.001 * xMul;
+
+                console.log(spheres[msg.id]);
             });
         </script>
     </body>
