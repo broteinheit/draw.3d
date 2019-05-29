@@ -26,10 +26,12 @@
             var spheres = {};
 
             function addSphere(color, id) {
-                var geometry = new THREE.SphereGeometry( 0.25, 32, 32 );
+                var geometry = new THREE.ConeGeometry( 0.25, 1, 32 );
                 var material = new THREE.MeshStandardMaterial( { color: color } );
                 var sphere = new THREE.Mesh( geometry, material );
                 scene.add( sphere );
+
+                sphere.rotation.x = Math.PI / 2;
 
                 spheres[id] = {
                     renderElem: sphere, 
@@ -41,10 +43,13 @@
             function move() {
                 for(x in spheres) {
                     var elem = spheres[x];
-
+/*
                     elem.renderElem.position.x += elem.direction.x;
                     elem.renderElem.position.y += elem.direction.y;
                     elem.renderElem.position.z += elem.direction.z;
+                    */
+                   elem.renderElem.translateY(0.05);
+
                 };
             }
 
@@ -91,7 +96,7 @@
             
             var controls = new THREE.OrbitControls( camera, renderer.domElement );
             controls.enableDamping = true;
-            controls.dampingFactor = 0.25;
+            controls.dampingFactor = 1;
             controls.enableZoom = true;
             //controls.autoRotate = true;
 
@@ -125,42 +130,14 @@
                 console.log(spheres);
 
                 var obj = spheres[msg.id];
+                
+                var e = obj.renderElem.rotation;
+                
+                e.set(e.x + msg.beta * Math.PI / 180 * -0.02, 0, e.z + msg.gamma * Math.PI / 180 * -0.025);
 
-                if (msg.gamma >= 0) {
-                    if( obj.direction.z >= 0.05 ) obj.mul.zMul = 1;
-                    if( obj.direction.z <= -0.05 ) obj.mul.zMul = -1;
-
-                    if( obj.direction.x >= 0.05 ) obj.mul.xMul = 1;
-                    if( obj.direction.x <= -0.05 ) obj.mul.xMul = -1;
-                } else if (msg.gamma < 0) {
-                    if( obj.direction.z >= 0.05 ) obj.mul.zMul = -1;
-                    if( obj.direction.z <= -0.05 ) obj.mul.zMul = 1;
-                    
-                    if( obj.direction.x >= 0.05 ) obj.mul.xMul = -1;
-                    if( obj.direction.x <= -0.05 ) obj.mul.xMul = 1;
-                }
+                console.log(obj.renderElem.rotation);
 
                 
-                
-
-                //console.log("yzMul: " + yzMul);
-
-                if (msg.beta >= 0) {
-                    if (obj.direction.y >= 0.05) obj.mul.yMul = -1;
-                    else if (obj.direction.y <= -0.05) obj.mul.yMul = 1;
-                } else if (msg.beta < 0) {
-                    if (obj.direction.y >= 0.05) obj.mul.yMul = 1;
-                    else if (obj.direction.y <= -0.05) obj.mul.yMul = -1;
-                }
-
-                console.log("yzMul: " + yzMul);
-
-                obj.direction.z += (msg.gamma / 90) * -0.001 * obj.mul.zMul;
-                obj.direction.x += (msg.gamma / 90) * -0.001 * obj.mul.xMul;
-
-                obj.direction.y += (msg.beta / 90) * 0.001 * obj.mul.yMul;
-
-                console.log(obj);
             });
         </script>
     </body>
