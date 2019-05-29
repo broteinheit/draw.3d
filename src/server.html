@@ -33,7 +33,8 @@
 
                 spheres[id] = {
                     renderElem: sphere, 
-                    direction: {x: 0, y: 0, z: 0.05}
+                    direction: {x: 0, y: 0, z: 0.05},
+                    mul: {xMul: 1, yMul: 1, zMul: 1}
                 };
             }
 
@@ -108,8 +109,6 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socket = io('/server');
-            var zMul = 1;
-            var xMul = 1;
 
             socket.on('users changed', function(msg) {
                 msg.forEach(elem => {
@@ -121,24 +120,43 @@
                 console.log(msg);
                 console.log(spheres);
 
-                if (msg.gamma >= 0) {
-                    if( spheres[msg.id].direction.z >= 0.05 ) zMul = -1;
-                    if( spheres[msg.id].direction.z <= -0.05 ) zMul = 1;
+                var obj = spheres[msg.id];
 
-                    if( spheres[msg.id].direction.x >= 0.05 ) xMul = -1;
-                    if( spheres[msg.id].direction.x <= -0.05 ) xMul = 1;
+                if (msg.gamma >= 0) {
+                    if( obj.direction.z >= 0.05 ) obj.mul.zMul = 1;
+                    if( obj.direction.z <= -0.05 ) obj.mul.zMul = -1;
+
+                    if( obj.direction.x >= 0.05 ) obj.mul.xMul = 1;
+                    if( obj.direction.x <= -0.05 ) obj.mul.xMul = -1;
                 } else if (msg.gamma < 0) {
-                    if( spheres[msg.id].direction.z >= 0.05 ) zMul = 1;
-                    if( spheres[msg.id].direction.z <= -0.05 ) zMul = -1;
+                    if( obj.direction.z >= 0.05 ) obj.mul.zMul = -1;
+                    if( obj.direction.z <= -0.05 ) obj.mul.zMul = 1;
                     
-                    if( spheres[msg.id].direction.x >= 0.05 ) xMul = 1;
-                    if( spheres[msg.id].direction.x <= -0.05 ) xMul = -1;
+                    if( obj.direction.x >= 0.05 ) obj.mul.xMul = -1;
+                    if( obj.direction.x <= -0.05 ) obj.mul.xMul = 1;
                 }
 
-                spheres[msg.id].direction.z += (msg.gamma / 90) * -0.001 * zMul;
-                spheres[msg.id].direction.x += (msg.gamma / 90) * -0.001 * xMul;
+                
+                
 
-                console.log(spheres[msg.id]);
+                //console.log("yzMul: " + yzMul);
+
+                if (msg.beta >= 0) {
+                    if (obj.direction.y >= 0.05) obj.mul.yMul = -1;
+                    else if (obj.direction.y <= -0.05) obj.mul.yMul = 1;
+                } else if (msg.beta < 0) {
+                    if (obj.direction.y >= 0.05) obj.mul.yMul = 1;
+                    else if (obj.direction.y <= -0.05) obj.mul.yMul = -1;
+                }
+
+                console.log("yzMul: " + yzMul);
+
+                obj.direction.z += (msg.gamma / 90) * -0.001 * obj.mul.zMul;
+                obj.direction.x += (msg.gamma / 90) * -0.001 * obj.mul.xMul;
+
+                obj.direction.y += (msg.beta / 90) * 0.001 * obj.mul.yMul;
+
+                console.log(obj);
             });
         </script>
     </body>
