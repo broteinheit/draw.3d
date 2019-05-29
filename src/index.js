@@ -55,6 +55,7 @@ clients.on("connection", function(socket) {
       console.log('client disconnected');
       users.splice(users.indexOf(id), 1);
       socket.broadcast.emit('users changed', users);
+      serverSockets.emit('users changed', users);
     });
 
     socket.on('orientation', function(msg) {

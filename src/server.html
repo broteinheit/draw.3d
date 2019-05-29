@@ -26,18 +26,22 @@
             var spheres = {};
 
             function addSphere(color, id) {
-                var geometry = new THREE.ConeGeometry( 0.25, 1, 32 );
-                var material = new THREE.MeshStandardMaterial( { color: color } );
-                var sphere = new THREE.Mesh( geometry, material );
-                scene.add( sphere );
+                if (spheres[id] == undefined) {
+                    users.push(id);
 
-                sphere.rotation.x = Math.PI / 2;
+                    var geometry = new THREE.ConeGeometry( 0.25, 1, 32 );
+                    var material = new THREE.MeshStandardMaterial( { color: color } );
+                    var sphere = new THREE.Mesh( geometry, material );
+                    scene.add( sphere );
 
-                spheres[id] = {
-                    renderElem: sphere, 
-                    direction: {x: 0, y: 0, z: 0.05},
-                    mul: {xMul: 1, yMul: 1, zMul: 1}
-                };
+                    sphere.rotation.x = Math.PI / 2;
+
+                    spheres[id] = {
+                        renderElem: sphere, 
+                        direction: {x: 0, y: 0, z: 0.05},
+                        mul: {xMul: 1, yMul: 1, zMul: 1}
+                    };
+                }
             }
 
             function move() {
@@ -120,6 +124,13 @@
             var yaw = 0;
 
             socket.on('users changed', function(msg) {
+                users.forEach(elem => {
+                    if (!msg.includes(elem)) {
+                        scene.remove(spheres[elem].renderElem);
+                        delete spheres.elem;
+                    }
+                });
+
                 msg.forEach(elem => {
                     addSphere('white', elem);
                 });
@@ -131,13 +142,13 @@
 
                 var obj = spheres[msg.id];
                 
+                obj.renderElem.material.color.set(msg.color);
+
                 var e = obj.renderElem.rotation;
                 
-                e.set(e.x + msg.beta * Math.PI / 180 * -0.02, 0, e.z + msg.gamma * Math.PI / 180 * -0.025);
+                e.set(e.x + msg.beta * Math.PI / 180 * -0.02, 0, e.z + msg.gamma * Math.PI / 180 * 0.025);
 
                 console.log(obj.renderElem.rotation);
-
-                
             });
         </script>
     </body>
