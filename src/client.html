@@ -165,14 +165,16 @@
             });
 
             function sendOrientation() {
-                var obj = {
-                    id: id,
-                    alpha: alpha,
-                    beta: beta,
-                    gamma: gamma,
-                    color: $('html').css('background-color')
+                if (!colorPicker) {
+                    var obj = {
+                        id: id,
+                        alpha: alpha,
+                        beta: beta,
+                        gamma: gamma,
+                        color: $('html').css('background-color')
+                    }
+                    socket.emit('orientation', obj);
                 }
-                socket.emit('orientation', obj);
             };
             
 

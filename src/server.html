@@ -37,9 +37,9 @@
                     sphere.rotation.x = Math.PI / 2;
 
                     spheres[id] = {
-                        renderElem: sphere, 
-                        direction: {x: 0, y: 0, z: 0.05},
-                        mul: {xMul: 1, yMul: 1, zMul: 1}
+                        renderElem: sphere,
+                        moving: false,
+                        cycle: 0                        
                     };
                 }
             }
@@ -47,21 +47,29 @@
             function move() {
                 for(x in spheres) {
                     var elem = spheres[x];
-/*
-                    elem.renderElem.position.x += elem.direction.x;
-                    elem.renderElem.position.y += elem.direction.y;
-                    elem.renderElem.position.z += elem.direction.z;
-                    */
-                    elem.renderElem.translateY(0.05);
+                    
+                    if (elem.moving) {
+                        elem.renderElem.translateY(0.05);
 
-                    var geometry = new THREE.SphereGeometry( 0.1, 32, 32 );
-                    var material = new THREE.MeshStandardMaterial( { color: elem.renderElem.material.color } );
-                    var sphere = new THREE.Mesh( geometry, material );
+                        elem.cycle++;
 
-                    sphere.position.copy(elem.renderElem.position);
-                    //console.log(sphere.position);
-                    //console.log(elem.renderElem.position);
-                    scene.add( sphere );
+                        if (elem.cycle >= 9) {
+                            var geometry = new THREE.SphereGeometry( 0.1, 32, 32 );
+                            var material = new THREE.MeshStandardMaterial( { color: elem.renderElem.material.color } );
+                            var sphere = new THREE.Mesh( geometry, material );
+
+                            sphere.position.copy(elem.renderElem.position);
+                            scene.add( sphere );
+
+                            setTimeout(function(elem) {
+                                scene.remove(elem);
+                            }, 10000, sphere);
+
+                            elem.cycle = 0;
+                        }
+                    }
+
+                    elem.moving = false;
                 };
             }
 
@@ -97,7 +105,7 @@
             
             var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), 
                 new THREE.MeshStandardMaterial( {color: 0xff0000} ) );
-            mesh.position.y = - 250;
+            mesh.position.y = - 150;
             mesh.rotation.x = - Math.PI / 2;
             mesh.receiveShadow = true;
             scene.add( mesh );
@@ -132,9 +140,11 @@
             var yaw = 0;
 
             socket.on('users changed', function(msg) {
+                console.log(msg);
                 users.forEach(elem => {
                     if (!msg.includes(elem)) {
                         scene.remove(spheres[elem].renderElem);
+                        spheres[elem].moving = false;
                         delete spheres.elem;
                     }
                 });
@@ -145,18 +155,19 @@
             });
 
             socket.on('orientation', function(msg) {
-                console.log(msg);
-                console.log(spheres);
-
+                //console.log(msg);
+                //console.log(spheres);
                 var obj = spheres[msg.id];
                 
+                obj.moving = true;
+
                 obj.renderElem.material.color.set(msg.color);
 
                 var e = obj.renderElem.rotation;
                 
                 e.set(e.x + msg.beta * Math.PI / 180 * -0.02, 0, e.z + msg.gamma * Math.PI / 180 * 0.025);
 
-                console.log(obj.renderElem.rotation);
+                //console.log(obj.renderElem.rotation);
             });
         </script>
     </body>
