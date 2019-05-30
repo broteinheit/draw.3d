@@ -1,5 +1,5 @@
 ﻿<!doctype html>
-<html>
+<html lang="en">
     <head>
         <title>draw.3d</title>
         <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -21,17 +21,17 @@
         <script src="js/three.js"></script>
         <script src="js/OrbitControls.js"></script>
         <script>
-            var users = [];
+            let users = [];
             
-            var spheres = {};
+            let spheres = {};
 
             function addSphere(color, id) {
-                if (spheres[id] == undefined) {
+                if (spheres[id] === undefined) {
                     users.push(id);
 
-                    var geometry = new THREE.ConeGeometry( 0.25, 1, 32 );
-                    var material = new THREE.MeshStandardMaterial( { color: color } );
-                    var sphere = new THREE.Mesh( geometry, material );
+                    let geometry = new THREE.ConeGeometry( 0.25, 1, 32 );
+                    let material = new THREE.MeshStandardMaterial( { color: color } );
+                    let sphere = new THREE.Mesh( geometry, material );
                     scene.add( sphere );
 
                     sphere.rotation.x = Math.PI / 2;
@@ -45,8 +45,8 @@
             }
 
             function move() {
-                for(x in spheres) {
-                    var elem = spheres[x];
+                for(let x in spheres) {
+                    let elem = spheres[x];
                     
                     if (elem.moving) {
                         elem.renderElem.translateY(0.05);
@@ -54,9 +54,9 @@
                         elem.cycle++;
 
                         if (elem.cycle >= 9) {
-                            var geometry = new THREE.SphereGeometry( 0.1, 32, 32 );
-                            var material = new THREE.MeshStandardMaterial( { color: elem.renderElem.material.color } );
-                            var sphere = new THREE.Mesh( geometry, material );
+                            const geometry = new THREE.SphereGeometry( 0.1, 32, 32 );
+                            const material = new THREE.MeshStandardMaterial( { color: elem.renderElem.material.color } );
+                            const sphere = new THREE.Mesh( geometry, material );
 
                             sphere.position.copy(elem.renderElem.position);
                             scene.add( sphere );
@@ -68,33 +68,26 @@
                             elem.cycle = 0;
                         }
                     }
-
                     elem.moving = false;
-                };
+                }
             }
 
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
-
-
-
-
-
-            var scene = new THREE.Scene();
-            var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
-            var renderer = new THREE.WebGLRenderer();
+            const renderer = new THREE.WebGLRenderer();
             renderer.setSize( window.innerWidth, window.innerHeight);
             document.body.appendChild( renderer.domElement );
 
             scene.add( new THREE.AmbientLight( 0x666666 ) );
-            var light = new THREE.DirectionalLight( 0xdfebff, 1 );
+            const light = new THREE.DirectionalLight( 0xdfebff, 1 );
 
-            light.position.set( 50, 200, 100 );
+            light.position.set(50, 200, 100);
             light.position.multiplyScalar( 1.3 );
             light.castShadow = true;
             light.shadow.mapSize.width = 1024;
             light.shadow.mapSize.height = 1024;
-            var d = 300;
+            const d = 300;
             light.shadow.camera.left = - d;
             light.shadow.camera.right = d;
             light.shadow.camera.top = d;
@@ -103,7 +96,7 @@
 
             scene.add( light );
             
-            var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), 
+            const mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ),
                 new THREE.MeshStandardMaterial( {color: 0xff0000} ) );
             mesh.position.y = - 150;
             mesh.rotation.x = - Math.PI / 2;
@@ -112,13 +105,11 @@
             
             camera.position.z = -5;
             camera.position.y = 5;
-
             
-            var controls = new THREE.OrbitControls( camera, renderer.domElement );
+            const controls = new THREE.OrbitControls( camera, renderer.domElement );
             controls.enableDamping = true;
             controls.dampingFactor = 1;
             controls.enableZoom = true;
-            //controls.autoRotate = true;
 
             function animate() {
                 move();
@@ -133,11 +124,7 @@
 
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            var socket = io('/server');
-
-            var roll = 0;
-            var pitch = 0;
-            var yaw = 0;
+            const socket = io('/server');
 
             socket.on('users changed', function(msg) {
                 console.log(msg);
@@ -155,19 +142,15 @@
             });
 
             socket.on('orientation', function(msg) {
-                //console.log(msg);
-                //console.log(spheres);
-                var obj = spheres[msg.id];
+                const obj = spheres[msg.id];
                 
                 obj.moving = true;
 
                 obj.renderElem.material.color.set(msg.color);
 
-                var e = obj.renderElem.rotation;
+                const e = obj.renderElem.rotation;
                 
                 e.set(e.x + msg.beta * Math.PI / 180 * -0.02, 0, e.z + msg.gamma * Math.PI / 180 * 0.025);
-
-                //console.log(obj.renderElem.rotation);
             });
         </script>
     </body>

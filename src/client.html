@@ -1,11 +1,11 @@
 ﻿<!doctype html>
-<html>
+<html lang="en">
     <head>
         <title>draw.3d</title>
         <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
         <style>
             html, body {
-                margin: 0px;
+                margin: 0;
                 width: 100%;
                 height: 100%;
             }
@@ -18,7 +18,6 @@
                 height: 40px;
                 background: black;
                 border-radius: 100%;
-                /*border: solid black 1px;*/
             }
 
             .colorPicker {
@@ -81,17 +80,17 @@
         <div class="ball" id="own" style="background: white"></div>
 
         <script>
-            var users = [];
-            var ball   = document.querySelector('#own');
-            var alpha;
-            var beta;
-            var gamma;
-            var id;
-            var minX;
-            var minY;
-            var maxY;
-            var maxX;
-            var colorPicker=true;
+            let users = [];
+            const ball   = document.querySelector('#own');
+            let alpha;
+            let beta;
+            let gamma;
+            let id;
+            let minX;
+            let minY;
+            let maxY;
+            let maxX;
+            let colorPicker=true;
 
             function handleOrientation(event) {
                 minX = 0;
@@ -99,25 +98,22 @@
                 maxY = innerWidth - ball.clientWidth;
                 maxX = innerWidth - ball.clientWidth;
 
-                var absolute = event.absolute;
                 alpha = event.alpha + 180;
                 beta = event.beta;  // In degree in the range [-180,180]
                 gamma = event.gamma; // In degree in the range [-90,90]
 
                 // Because we don't want to have the device upside down
                 // We constrain the x value to the range [-90,90]
-                if (alpha >  90) { alpha =  90};
-                if (alpha <  -90) { alpha =  -90};
-                if (beta >  90) { beta =  90};
-                if (beta <  -90) { beta =  -90};
-                if (gamma > 90) { gamma = 90};
-                if (gamma < -90) { gamma = -90};
+                if (alpha >  90) { alpha =  90}
+                if (alpha <  -90) { alpha =  -90}
+                if (beta >  90) { beta =  90}
+                if (beta <  -90) { beta =  -90}
+                if (gamma > 90) { gamma = 90}
+                if (gamma < -90) { gamma = -90}
 
                 // To make computation easier we shift the range of
                 // x and y to [0,180]
 
-                // 10 is half the size of the ball
-                // It center the positioning point to the center of the ball
                 ball.style.top  = (minY + (maxY*(beta+90)/180)) + "px";
                 ball.style.left = (minX + (maxX*(gamma+90)/180)) + "px";
             }
@@ -126,8 +122,9 @@
         </script>
 
         <script src="/socket.io/socket.io.js"></script>
+
         <script>
-            var socket = io('/client');
+            const socket = io('/client');
 
             $('#pickerBtn').hide();
 
@@ -138,10 +135,10 @@
 
             socket.on('users changed', function(msg) {
                 users = msg;
-                var html="";
+                let html="";
 
                 users.forEach(elem => {
-                    if (id != elem) {
+                    if (id !== elem) {
                         html += "<div id=\"" + elem + "\" class=\"ball\"></div>";
                     }
                 });
@@ -166,17 +163,16 @@
 
             function sendOrientation() {
                 if (!colorPicker) {
-                    var obj = {
+                    const obj = {
                         id: id,
                         alpha: alpha,
                         beta: beta,
                         gamma: gamma,
                         color: $('html').css('background-color')
-                    }
+                    };
                     socket.emit('orientation', obj);
                 }
-            };
-            
+            }
 
             $(".color").on('click', function() {
                 $(".colorPicker").hide();
