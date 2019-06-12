@@ -73,6 +73,7 @@
             }
 
             const scene = new THREE.Scene();
+            scene.background = new THREE.Color( 0xBDBDBD );
             const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
             const renderer = new THREE.WebGLRenderer();
@@ -97,7 +98,7 @@
             scene.add( light );
             
             const mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ),
-                new THREE.MeshStandardMaterial( {color: 0xff0000} ) );
+                new THREE.MeshLambertMaterial( {color: 0x757575} ) );
             mesh.position.y = - 150;
             mesh.rotation.x = - Math.PI / 2;
             mesh.receiveShadow = true;
