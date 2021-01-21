@@ -4,6 +4,6 @@
     "description": "Users can 'draw' in an 3D environment with their smartphones",
     "dependencies": {
         "express": "^4.17.0",
-        "socket.io": "^2.2.0"
+        "socket.io": "^2.4.0"
     }
 }
