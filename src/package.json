@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "description": "Users can 'draw' in an 3D environment with their smartphones",
     "dependencies": {
-        "express": "^4.17.0",
+        "express": "^4.17.3",
         "socket.io": "^2.2.0"
     }
 }
